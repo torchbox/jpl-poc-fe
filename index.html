@@ -7,6 +7,18 @@
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <style>
+    .para a {
+      color:black;
+      opacity: 1;
+      transition: opacity .15s ease-in;
+    }
+    .para a:hover,
+    .para a:focus {
+      opacity: .5;
+      transition: opacity .15s ease-in;
+    }
+  </style>
 </head>
 <body class="w-100 sans-serif cf ph3 ph5-ns pb5 bg-white black-80">
   <div id="app">
@@ -54,7 +66,7 @@
             </div>
             
             <div v-else-if="block.type == 'paragraph'">
-                <p v-html="block.value"></p>
+                <p v-html="block.value" class="para"></p>
             </div>
           </span>
         </div>
