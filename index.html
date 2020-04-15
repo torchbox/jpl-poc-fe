@@ -1,0 +1,93 @@
+<html>
+<head>
+  <title>Headless news</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body class="w-100 sans-serif cf ph3 ph5-ns pb5 bg-white black-80">
+  <div id="app">
+  <h1 class="f-headline-ns f1 lh-solid mb2">JPL News</h1>
+  <router-view></router-view>
+</div>
+  <script>
+    const API_ROOT = 'https://jpl-poc.herokuapp.com/api/v2/pages/';
+    /* News listing component */
+    const NewsListing = { 
+      template: `
+      <div class="measure-wide">
+        <div v-for="item in news">
+          <router-link class="black dim" :to="/news/+ item.id">
+            <h2>{{ item.title }}</h2>
+          </router-link>
+          <p>{{ item.introduction }}</p> 
+          <p>{{ item.publication_date }}</p>
+        </div>
+      </div>
+      `,
+      data: function () {
+        return { news: [] }
+      },
+      mounted () {
+          axios
+          .get(API_ROOT + '?type=news.NewsPage&fields=introduction,body,publication_date')
+          .then(response => (this.news = response.data.items))
+      },
+    }
+    /* News item component */
+    const NewsItem = { 
+      template: `
+        <div class="measure-wide">
+          <router-link to="/" class="black dim">Home</router-link>
+          <h1>{{ item.title }}</h1>
+          <img v-if="item.hero_thumbnail" 
+            :src="'' + item.hero_thumbnail.url"
+            :width="item.hero_thumbnail.width"
+            :height="item.hero_thumbnail.height">
+          <h3>{{ item.introduction }}</h3>
+          <span v-for="block in item.body">
+            <div v-if="block.type == 'heading'">
+                <h2>{{ block.value }}</h2>
+            </div>
+            
+            <div v-else-if="block.type == 'paragraph'">
+                <p v-html="block.value"></p>
+            </div>
+          </span>
+        </div>
+      `,
+      data: function () {
+        return { item: {} }
+      },
+      methods: {
+        getNews() {
+          axios
+            .get(API_ROOT + this.$route.params.id + '/')
+            .then((response) => (this.item = response.data))
+        }
+      },
+      mounted () {
+          this.getNews();
+      },
+      watch: {
+        '$route' (to, from) {
+          this.getNews();
+        }
+      }
+    }
+    const routes = [
+        { path: '/', component: NewsListing },
+        { path: '/news/:id', component: NewsItem }
+    ]
+    const router = new VueRouter({
+        routes
+    })
+    const app = new Vue({
+        router
+    }).$mount('#app')
+  </script>
+</body>
+</html>
