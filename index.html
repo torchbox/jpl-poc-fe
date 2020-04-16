@@ -36,12 +36,21 @@
             <h2>{{ item.title }}</h2>
           </router-link>
           <p>{{ item.introduction }}</p> 
-          <p>{{ item.publication_date }}</p>
+          <p>{{ item.publication_date|datify }}</p>
         </div>
       </div>
       `,
       data: function () {
         return { news: [] }
+      },
+      filters: {
+          datify: function (value) {
+              if (value && value.length) {
+                d = new Date(Date.parse(value));
+                var options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return d.toLocaleDateString('en-us', options)
+              }
+          }
       },
       mounted () {
           axios
