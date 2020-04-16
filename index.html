@@ -58,7 +58,8 @@
           <img v-if="item.hero_thumbnail" 
             :src="'' + item.hero_thumbnail.url"
             :width="item.hero_thumbnail.width"
-            :height="item.hero_thumbnail.height">
+            :height="item.hero_thumbnail.height"
+            class="br1">
           <h3>{{ item.introduction }}</h3>
           <span v-for="block in item.body">
             <div v-if="block.type == 'heading'">
